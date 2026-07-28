@@ -38,14 +38,9 @@ export function AboutModal({ onClose }: AboutModalProps) {
             </p>
             <p className="feature-text" style={{ margin: '10px 0 0 0' }}>
               {t('about.learnMore')}{' '}
-              <a
-                className="about-link"
-                href="https://learn.microsoft.com/fabric/iq/overview"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                https://learn.microsoft.com/fabric/iq/overview
-              </a>
+              <span className="about-link">
+                Microsoft Fabric
+              </span>
             </p>
           </div>
 

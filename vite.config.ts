@@ -21,8 +21,8 @@ function resolveBasePath(): string {
 // In addition, the runtime `fetch()` calls for catalogue.json / learn.json are served
 // from inline data via a window.fetch shim, so no resource:// sub-request is ever made.
 
-// Reads public/catalogue.json + public/learn.json and injects them inline, patching
-// window.fetch to return them. Build-only, harmony mode, zero React-code changes.
+// Reads public/catalogue.json and injects it inline, patching window.fetch to return
+// it. Build-only, harmony mode, zero React-code changes.
 function harmonyDataInject() {
   return {
     name: 'harmony-data-inject',
@@ -35,21 +35,27 @@ function harmonyDataInject() {
           return 'null';
         }
       };
+      // Strip external (http/https) links from inlined course data so the
+      // offline build never renders a clickable link that leaves the device.
+      // Handles both HTML <a href="..."> (drops the href) and bare URLs in
+      // plain/markdown text (removed entirely). Quotes may be JSON-escaped
+      // as \" inside the data files.
+      const stripExternalLinks = (s: string): string =>
+        s
+          .replace(/<a\s+[^>]*href=\\?["']https?:\/\/[^>]*>/gi, '<a>')
+          .replace(/https?:\/\/[^\s"<]+/g, '')
+          .replace(/github\.com\/[^\s<"]+/g, '');
       // Escape '<' so embedded JSON can never close the <script> tag prematurely.
-      const safe = (s: string): string => s.replace(/</g, '\\u003c');
+      const safe = (s: string): string => stripExternalLinks(s).replace(/</g, '\\u003c');
       const catalogue = safe(read('public/catalogue.json'));
-      const learn = safe(read('public/learn.json'));
       const script = `<script>
 (function(){
-  window.__HARMONY_DATA__ = { catalogue: ${catalogue}, learn: ${learn} };
+  window.__HARMONY_DATA__ = { catalogue: ${catalogue} };
   var _orig = window.fetch ? window.fetch.bind(window) : null;
   window.fetch = function(input, init){
     var url = (typeof input === 'string') ? input : (input && input.url) || '';
     if (/catalogue\\.json/.test(url)) {
       return Promise.resolve(new Response(JSON.stringify(window.__HARMONY_DATA__.catalogue), {status:200, headers:{'Content-Type':'application/json'}}));
-    }
-    if (/learn\\.json/.test(url)) {
-      return Promise.resolve(new Response(JSON.stringify(window.__HARMONY_DATA__.learn), {status:200, headers:{'Content-Type':'application/json'}}));
     }
     return _orig ? _orig(input, init) : Promise.reject(new Error('fetch unavailable'));
   };

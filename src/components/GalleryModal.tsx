@@ -514,31 +514,23 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         >
           <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
             Want to contribute? See{' '}
-            <a
-              href="https://github.com/microsoft/Ontology-Playground/blob/main/CONTRIBUTING.md"
-              target="_blank"
-              rel="noopener noreferrer"
+            <span
               style={{
                 color: 'var(--ms-blue, #0078D4)',
                 textDecoration: 'underline',
-                cursor: 'pointer',
               }}
             >
               <strong>CONTRIBUTING.md</strong>
-            </a>
+            </span>
             {' '}— add your ontology as an RDF file and{' '}
-            <a
-              href="https://github.com/microsoft/Ontology-Playground/fork"
-              target="_blank"
-              rel="noopener noreferrer"
+            <span
               style={{
                 color: 'var(--ms-blue, #0078D4)',
                 textDecoration: 'underline',
-                cursor: 'pointer',
               }}
             >
               open a PR
-            </a>
+            </span>
             .
           </p>
         </div>

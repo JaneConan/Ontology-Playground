@@ -17,7 +17,6 @@ import {
   GalleryModal,
   OntologySummaryModal,
   OntologyDesigner,
-  LearnPage,
   Toast,
   CommandPalette,
   GuidedTour,
@@ -33,7 +32,7 @@ import { useRoute } from './hooks/useRoute';
 import { navigate } from './lib/router';
 import { decodeSharePayload } from './lib/shareCodec';
 import type { Catalogue } from './types/catalogue';
-import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Palette, FileText } from 'lucide-react';
+import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, FileJson, HelpCircle, Database, Palette, FileText } from 'lucide-react';
 import './styles/app.css';
 
 const AI_BUILDER_ENABLED = import.meta.env.VITE_ENABLE_AI_BUILDER === 'true';
@@ -136,8 +135,6 @@ function App() {
     navigate({ page: 'designer' });
   }, []);
 
-  const openLearn = useCallback(() => navigate({ page: 'learn' }), []);
-
   const cycleTheme = useCallback(() => {
     const idx = THEME_OPTIONS.findIndex((t) => t.id === theme);
     const next = THEME_OPTIONS[(idx + 1) % THEME_OPTIONS.length];
@@ -175,21 +172,17 @@ function App() {
   const commands = useMemo<CommandItem[]>(() => [
     { id: 'catalogue', label: t('command.openCatalogue'), icon: <LayoutGrid size={18} />, action: openGallery },
     { id: 'designer', label: t('command.openDesigner'), icon: <PenTool size={18} />, action: openDesigner },
-    { id: 'learn', label: t('command.openSchool'), icon: <BookOpen size={18} />, action: openLearn },
     { id: 'import-export', label: t('command.importExport'), icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
     { id: 'summary', label: t('command.viewSummary'), icon: <FileText size={18} />, action: () => setShowSummary(true) },
     { id: 'about', label: t('command.about'), icon: <Info size={18} />, action: () => setShowAbout(true) },
     { id: 'help', label: t('command.help'), icon: <HelpCircle size={18} />, action: () => setShowHelp(true) },
     { id: 'data-sources', label: t('command.dataSources'), icon: <Database size={18} />, action: () => setShowDataSources(true) },
     { id: 'theme', label: t('command.switchTheme'), icon: <Palette size={18} />, action: cycleTheme },
-  ], [t, openGallery, openDesigner, openLearn, cycleTheme]);
+  ], [t, openGallery, openDesigner, cycleTheme]);
 
   // Full-page views
   if (route.page === 'designer') {
     return <OntologyDesigner route={route} />;
-  }
-  if (route.page === 'learn') {
-    return <LearnPage route={route} />;
   }
 
   return (
@@ -201,7 +194,6 @@ function App() {
         onImportExportClick={() => setShowImportExport(true)}
         onGalleryClick={openGallery}
         onDesignerClick={openDesigner}
-        onLearnClick={openLearn}
         onNLBuilderClick={AI_BUILDER_ENABLED ? () => setShowNLBuilder(true) : undefined}
         onSummaryClick={() => setShowSummary(true)}
       />

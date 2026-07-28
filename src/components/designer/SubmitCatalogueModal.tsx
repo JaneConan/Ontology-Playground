@@ -8,8 +8,6 @@ interface SubmitCatalogueModalProps {
   onClose: () => void;
 }
 
-const REPO_URL = 'https://github.com/microsoft/Ontology-Playground';
-
 export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
   const { t } = useTranslation();
   const ontology = useDesignerStore((s) => s.ontology);
@@ -57,9 +55,9 @@ export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
         <div className="submit-step">
           <p className="submit-description">
             {t('designer.submitDesc1')}
-            <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+            <span>
               Ontology Playground repo <ExternalLink size={12} />
-            </a>.
+            </span>.
           </p>
 
           <div className="submit-instructions">
@@ -67,9 +65,9 @@ export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
             <ol>
               <li>{t('designer.stepDownload')}</li>
               <li>
-                <a href={`${REPO_URL}/fork`} target="_blank" rel="noopener noreferrer">
+                <span>
                   {t('designer.stepFork')} <ExternalLink size={12} />
-                </a>
+                </span>
               </li>
               <li>
                 {t('designer.stepAddFiles')}
