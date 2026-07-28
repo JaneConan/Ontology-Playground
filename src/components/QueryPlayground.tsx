@@ -1,10 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store/appStore';
 import { processQuery, generateQuerySuggestions } from '../data/queryEngine';
 import { Search, Sparkles, X, Lightbulb } from 'lucide-react';
 
 export function QueryPlayground() {
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [result, setResult] = useState<string | null>(null);
   const [interpretation, setInterpretation] = useState<string | null>(null);
@@ -84,14 +86,14 @@ export function QueryPlayground() {
     <div className="query-section">
       <div className="section-title">
         <Sparkles size={14} />
-        Natural Language Query (NL2Ontology)
+        {t('query.title')}
       </div>
       
       <div className="query-input-container">
         <input
           type="text"
           className="query-input"
-          placeholder={`Ask about ${currentOntology.name}...`}
+          placeholder={t('query.placeholder', { name: currentOntology.name })}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
@@ -104,7 +106,7 @@ export function QueryPlayground() {
         <button 
           className="btn btn-primary" 
           onClick={handleQuery}
-          aria-label="Run query"
+          aria-label={t('query.runQuery')}
           disabled={isProcessing}
         >
           {isProcessing ? (
@@ -122,8 +124,8 @@ export function QueryPlayground() {
 
       {!result && !isProcessing && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>
-            Try asking:
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8 }}>
+            {t('query.tryAsking')}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {sampleQueries.slice(0, 3).map((query, index) => (
