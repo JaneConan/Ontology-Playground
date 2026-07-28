@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { viteSingleFile } from 'vite-plugin-singlefile'
+import fs from 'node:fs'
+import path from 'node:path'
 
 function resolveBasePath(): string {
   if (process.env.VITE_BASE_PATH) return process.env.VITE_BASE_PATH;
@@ -13,24 +16,83 @@ function resolveBasePath(): string {
   return '/';
 }
 
+// Harmony build: inline EVERYTHING (JS/CSS/fonts) into a single index.html so the
+// ArkWeb shell can load it from $rawfile with zero sub-resource (CORS-blocked) requests.
+// In addition, the runtime `fetch()` calls for catalogue.json / learn.json are served
+// from inline data via a window.fetch shim, so no resource:// sub-request is ever made.
+
+// Reads public/catalogue.json + public/learn.json and injects them inline, patching
+// window.fetch to return them. Build-only, harmony mode, zero React-code changes.
+function harmonyDataInject() {
+  return {
+    name: 'harmony-data-inject',
+    transformIndexHtml(html: string) {
+      const root = process.cwd();
+      const read = (rel: string): string => {
+        try {
+          return fs.readFileSync(path.join(root, rel), 'utf-8');
+        } catch {
+          return 'null';
+        }
+      };
+      // Escape '<' so embedded JSON can never close the <script> tag prematurely.
+      const safe = (s: string): string => s.replace(/</g, '\\u003c');
+      const catalogue = safe(read('public/catalogue.json'));
+      const learn = safe(read('public/learn.json'));
+      const script = `<script>
+(function(){
+  window.__HARMONY_DATA__ = { catalogue: ${catalogue}, learn: ${learn} };
+  var _orig = window.fetch ? window.fetch.bind(window) : null;
+  window.fetch = function(input, init){
+    var url = (typeof input === 'string') ? input : (input && input.url) || '';
+    if (/catalogue\\.json/.test(url)) {
+      return Promise.resolve(new Response(JSON.stringify(window.__HARMONY_DATA__.catalogue), {status:200, headers:{'Content-Type':'application/json'}}));
+    }
+    if (/learn\\.json/.test(url)) {
+      return Promise.resolve(new Response(JSON.stringify(window.__HARMONY_DATA__.learn), {status:200, headers:{'Content-Type':'application/json'}}));
+    }
+    return _orig ? _orig(input, init) : Promise.reject(new Error('fetch unavailable'));
+  };
+})();
+</script>`;
+      return html.replace('<head>', '<head>' + script);
+    },
+  };
+}
+
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  base: resolveBasePath(),
-  build: {
-    outDir: 'build',
-    chunkSizeWarningLimit: 900,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes('node_modules')) return undefined;
-          if (id.includes('cytoscape')) return 'graph-vendor';
-          if (id.includes('react') || id.includes('zustand') || id.includes('framer-motion')) return 'ui-vendor';
-          return 'vendor';
-        },
+export default defineConfig(({ mode }) => {
+  const harmony = mode === 'harmony';
+  return {
+    plugins: [
+      react(),
+      ...(harmony
+        ? [
+            harmonyDataInject(),
+            viteSingleFile({
+              useRecommendedBuildConfig: true,
+              removeViteModuleLoader: true,
+            }),
+          ]
+        : []),
+    ],
+    base: harmony ? './' : resolveBasePath(),
+    build: {
+      outDir: 'build',
+      chunkSizeWarningLimit: 9000,
+      rollupOptions: {
+        output: harmony
+          ? {}
+          : {
+              manualChunks(id) {
+                if (!id.includes('node_modules')) return undefined;
+                if (id.includes('cytoscape')) return 'graph-vendor';
+                if (id.includes('react') || id.includes('zustand') || id.includes('framer-motion')) return 'ui-vendor';
+                return 'vendor';
+              },
+            },
       },
     },
-  },
   server: {
     proxy: {
       ...(process.env.VITE_ENABLE_AI_BUILDER === 'true'
@@ -43,4 +105,5 @@ export default defineConfig({
         : {}),
     },
   },
+  };
 })
