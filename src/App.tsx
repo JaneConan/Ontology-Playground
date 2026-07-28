@@ -37,6 +37,9 @@ import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, Fi
 import './styles/app.css';
 
 const AI_BUILDER_ENABLED = import.meta.env.VITE_ENABLE_AI_BUILDER === 'true';
+// Cloud features are opt-in. Default ON for the web app; the offline/Harmony
+// build sets VITE_ENABLE_FABRIC=false so no Microsoft Fabric calls can be made.
+const FABRIC_ENABLED = import.meta.env.VITE_ENABLE_FABRIC !== 'false';
 
 const NLBuilderModal = AI_BUILDER_ENABLED
   ? lazy(() => import('./components/NLBuilderModal').then(m => ({ default: m.NLBuilderModal })))
@@ -258,10 +261,10 @@ function App() {
         {showDataSources && <DataSourcesModal onClose={() => setShowDataSources(false)} />}
       </AnimatePresence>
       <AnimatePresence>
-        {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} onFabricPush={() => { setShowImportExport(false); setShowFabricExport(true); }} />}
+        {showImportExport && <ImportExportModal onClose={() => setShowImportExport(false)} onFabricPush={FABRIC_ENABLED ? () => { setShowImportExport(false); setShowFabricExport(true); } : undefined} />}
       </AnimatePresence>
       <AnimatePresence>
-        {showFabricExport && <FabricExportModal onClose={() => setShowFabricExport(false)} />}
+        {FABRIC_ENABLED && showFabricExport && <FabricExportModal onClose={() => setShowFabricExport(false)} />}
       </AnimatePresence>
       <AnimatePresence>
         {showGallery && <GalleryModal onClose={closeGallery} />}

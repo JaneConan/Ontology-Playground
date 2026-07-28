@@ -2,6 +2,8 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { I18nextProvider } from 'react-i18next'
 import i18n from './i18n'
+// Cascadia Code bundled locally (offline build — no Google Fonts CDN at runtime)
+import '@fontsource/cascadia-code'
 
 // Note: StrictMode disabled due to Cytoscape.js incompatibility with double-mounting
 // This only affects development - production builds don't use StrictMode anyway

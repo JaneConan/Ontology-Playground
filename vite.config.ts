@@ -33,17 +33,6 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // GitHub OAuth device-flow endpoints don't support CORS — proxy in dev
-      '/__github/login/device/code': {
-        target: 'https://github.com',
-        changeOrigin: true,
-        rewrite: (path: string) => path.replace('/__github', ''),
-      },
-      '/__github/login/oauth/access_token': {
-        target: 'https://github.com',
-        changeOrigin: true,
-        rewrite: (path: string) => path.replace('/__github', ''),
-      },
       ...(process.env.VITE_ENABLE_AI_BUILDER === 'true'
         ? {
             '/api': {

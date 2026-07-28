@@ -8,6 +8,7 @@
     "catalogue:build": "tsx scripts/compile-catalogue.ts",
     "learn:build": "tsx scripts/compile-learn.ts",
     "build": "npm run catalogue:build && npm run learn:build && tsc -b && vite build && npm run build:embed",
+    "build:harmony": "npm run catalogue:build && npm run learn:build && tsc -b && VITE_BASE_PATH=./ VITE_ENABLE_FABRIC=false vite build",
     "build:embed": "vite build --config vite.config.embed.ts",
     "lint": "eslint .",
     "hooks:install": "git config core.hooksPath .githooks",
@@ -23,6 +24,7 @@
     "preview:ontology:prepare": "tsx scripts/prepare-ontology-preview-assets.ts"
   },
   "dependencies": {
+    "@fontsource/cascadia-code": "^5.3.0",
     "@types/cytoscape": "^3.21.9",
     "@types/sanitize-html": "^2.16.0",
     "cytoscape": "^3.33.1",
