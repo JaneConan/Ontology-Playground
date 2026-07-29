@@ -5,8 +5,13 @@ import { useRoute } from '../hooks/useRoute';
 import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
-import { Palette, Check, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, Menu, X, Download, Info } from 'lucide-react';
+import { Palette, Check, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, Menu, Download, Info } from 'lucide-react';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+
+// In the HarmonyOS offline ArkWeb shell, anchor-based file downloads never
+// reach the system, so the share button's "too large → download RDF" fallback
+// is disabled there (URL-copy path still works for catalogue/custom ontologies).
+const IS_HARMONY = import.meta.env.VITE_HARMONY === 'true';
 
 interface HeaderProps {
   onAboutClick: () => void;
@@ -62,8 +67,8 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
       history.replaceState(null, '', routeToHash({ page: 'share', data: encoded }));
       setShareStatus('copied');
       setTimeout(() => setShareStatus('idle'), 2000);
-    } else {
-      // Too large for URL — download the RDF file instead
+    } else if (!IS_HARMONY) {
+      // Too large for URL — download the RDF file instead (web only)
       const content = serializeToRDF(currentOntology, dataBindings);
       const blob = new Blob([content], { type: 'application/rdf+xml' });
       const url = URL.createObjectURL(blob);
@@ -117,7 +122,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         </svg>
         <div>
           <span className="header-title">
-            Ontology Playground <span className="header-title-preview">{t('header.preview')}</span>
+            {t('header.appName')} <span className="header-title-preview">{t('header.preview')}</span>
           </span>
           <span className="header-context">{ontologyDisplayName}</span>
         </div>
@@ -161,9 +166,11 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         <button className="icon-btn" onClick={onDesignerClick} data-tooltip={t('header.designer')} aria-label={t('header.designer')}>
           <PenTool size={20} />
         </button>
-        <button className="icon-btn" onClick={onImportExportClick} data-tooltip={t('header.importExport')} aria-label={t('header.importExport')}>
-          <FileJson size={20} />
-        </button>
+        {!IS_HARMONY && (
+          <button className="icon-btn" onClick={onImportExportClick} data-tooltip={t('header.importExport')} aria-label={t('header.importExport')}>
+            <FileJson size={20} />
+          </button>
+        )}
         <button className="icon-btn" onClick={onHelpClick} data-tooltip={t('header.help')} aria-label={t('header.help')}>
           <HelpCircle size={20} />
         </button>
@@ -211,8 +218,8 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
 
         {/* Mobile hamburger menu */}
         <div className="header-mobile-menu" ref={menuRef}>
-        <button className="icon-btn header-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label={t('header.menu')}>
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+        <button className="icon-btn header-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label={t('header.menu')} aria-expanded={menuOpen}>
+          <Menu size={22} />
         </button>
         {menuOpen && (
           <div className="mobile-menu-dropdown">
@@ -242,9 +249,11 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
             <button className="mobile-menu-item" onClick={menuAction(onDesignerClick)}>
               <PenTool size={18} /> {t('header.designer')}
             </button>
-            <button className="mobile-menu-item" onClick={menuAction(onImportExportClick)}>
-              <FileJson size={18} /> {t('header.importExport')}
-            </button>
+            {!IS_HARMONY && (
+              <button className="mobile-menu-item" onClick={menuAction(onImportExportClick)}>
+                <FileJson size={18} /> {t('header.importExport')}
+              </button>
+            )}
             <button className="mobile-menu-item" onClick={menuAction(onHelpClick)}>
               <HelpCircle size={18} /> {t('header.help')}
             </button>

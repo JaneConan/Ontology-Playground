@@ -17,6 +17,7 @@ type SourceFilter = 'all' | 'official' | 'community' | 'external';
 
 export function GalleryModal({ onClose }: GalleryModalProps) {
   const { currentOntology, loadOntology } = useAppStore();
+  const IS_HARMONY = import.meta.env.VITE_HARMONY === 'true';
 
   const [catalogue, setCatalogue] = useState<CatalogueEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -426,6 +427,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       >
                         <Code size={13} />
                       </button>
+                      {!IS_HARMONY && (
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
@@ -437,6 +439,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       >
                         <Share2 size={13} />
                       </button>
+                      )}
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
@@ -454,7 +457,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       >
                         <Pencil size={13} />
                       </button>
-                      {!isActive && (
+                      {!IS_HARMONY && !isActive && (
                         <button
                           className="btn btn-secondary"
                           style={{ padding: '6px 12px', fontSize: 12 }}

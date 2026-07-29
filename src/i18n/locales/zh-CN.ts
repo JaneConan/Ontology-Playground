@@ -23,6 +23,7 @@ export default {
 
   // 顶部栏
   'header.untitled': '未命名本体',
+  'header.appName': '本体演练场',
   'header.preview': '（预览）',
   'header.points': '积分',
   'header.badges': '徽章',

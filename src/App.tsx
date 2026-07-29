@@ -39,6 +39,10 @@ const AI_BUILDER_ENABLED = import.meta.env.VITE_ENABLE_AI_BUILDER === 'true';
 // Cloud features are opt-in. Default ON for the web app; the offline/Harmony
 // build sets VITE_ENABLE_FABRIC=false so no Microsoft Fabric calls can be made.
 const FABRIC_ENABLED = import.meta.env.VITE_ENABLE_FABRIC !== 'false';
+// ArkWeb offline shell can't actually save downloaded files (anchor.download is
+// inert), so any export entry point is a dead button and would be flagged by
+// AppGallery. Hide the whole import/export surface on Harmony.
+const IS_HARMONY = import.meta.env.VITE_HARMONY === 'true';
 
 const NLBuilderModal = AI_BUILDER_ENABLED
   ? lazy(() => import('./components/NLBuilderModal').then(m => ({ default: m.NLBuilderModal })))
@@ -169,16 +173,23 @@ function App() {
   }, []);
 
   // ── Command palette items ──────────────────────────────
-  const commands = useMemo<CommandItem[]>(() => [
-    { id: 'catalogue', label: t('command.openCatalogue'), icon: <LayoutGrid size={18} />, action: openGallery },
-    { id: 'designer', label: t('command.openDesigner'), icon: <PenTool size={18} />, action: openDesigner },
-    { id: 'import-export', label: t('command.importExport'), icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
-    { id: 'summary', label: t('command.viewSummary'), icon: <FileText size={18} />, action: () => setShowSummary(true) },
-    { id: 'about', label: t('command.about'), icon: <Info size={18} />, action: () => setShowAbout(true) },
-    { id: 'help', label: t('command.help'), icon: <HelpCircle size={18} />, action: () => setShowHelp(true) },
-    { id: 'data-sources', label: t('command.dataSources'), icon: <Database size={18} />, action: () => setShowDataSources(true) },
-    { id: 'theme', label: t('command.switchTheme'), icon: <Palette size={18} />, action: cycleTheme },
-  ], [t, openGallery, openDesigner, cycleTheme]);
+  const commands = useMemo<CommandItem[]>(() => {
+    const cmds: CommandItem[] = [
+      { id: 'catalogue', label: t('command.openCatalogue'), icon: <LayoutGrid size={18} />, action: openGallery },
+      { id: 'designer', label: t('command.openDesigner'), icon: <PenTool size={18} />, action: openDesigner },
+      { id: 'summary', label: t('command.viewSummary'), icon: <FileText size={18} />, action: () => setShowSummary(true) },
+      { id: 'about', label: t('command.about'), icon: <Info size={18} />, action: () => setShowAbout(true) },
+      { id: 'help', label: t('command.help'), icon: <HelpCircle size={18} />, action: () => setShowHelp(true) },
+      { id: 'data-sources', label: t('command.dataSources'), icon: <Database size={18} />, action: () => setShowDataSources(true) },
+      { id: 'theme', label: t('command.switchTheme'), icon: <Palette size={18} />, action: cycleTheme },
+    ];
+    // Import/Export is a dead button on Harmony (anchor.download inert), so it
+    // must not appear in any launcher — menu bar, hamburger, or Cmd+K palette.
+    if (!IS_HARMONY) {
+      cmds.push({ id: 'import-export', label: t('command.importExport'), icon: <FileJson size={18} />, action: () => setShowImportExport(true) });
+    }
+    return cmds;
+  }, [t, openGallery, openDesigner, cycleTheme]);
 
   // Full-page views
   if (route.page === 'designer') {

@@ -8,6 +8,7 @@ import { parseRDF, RDFParseError } from '../lib/rdf/parser';
 import type { Ontology, DataBinding } from '../data/ontology';
 
 const LEGACY_FORMATS_ENABLED = import.meta.env.VITE_ENABLE_LEGACY_FORMATS === 'true';
+const IS_HARMONY = import.meta.env.VITE_HARMONY === 'true';
 
 interface ImportExportModalProps {
   onClose: () => void;
@@ -376,6 +377,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
             </div>
           </div>
 
+          {!IS_HARMONY && (
           <div 
             style={{ 
               padding: 24, 
@@ -497,6 +499,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
               </button>
             )}
           </div>
+          )}
         </div>
 
         {/* Schema Reference — only shown when legacy JSON format is enabled */}

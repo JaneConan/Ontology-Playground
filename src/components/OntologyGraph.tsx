@@ -5,6 +5,8 @@ import type { Core, EventObject, LayoutOptions } from 'cytoscape';
 import { useAppStore } from '../store/appStore';
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'lucide-react';
 
+const IS_HARMONY = import.meta.env.VITE_HARMONY === 'true';
+
 // Register fcose layout
 cytoscape.use(fcose);
 
@@ -328,6 +330,34 @@ export function OntologyGraph() {
     window.__ONTOLOGY_PREVIEW_CY__ = cy;
     mountedRef.current = true;
 
+    // ── Foldable / resize handling ──────────────────────────────────────────
+    // The Web container resizes whenever the device folds/unfolds, the window is
+    // resized, or the orientation changes. Cytoscape does NOT auto-resize, so
+    // without this the canvas keeps its stale pixel size and gets clipped
+    // ("部分内容无法显示") — a classic fold-compat failure. A ResizeObserver
+    // fires purely on box-size changes (independent of the window 'resize'
+    // event), making it the most reliable hook for fold transitions.
+    let resizeTimer: number | undefined;
+    let firstObserve = true;
+    const ro = new ResizeObserver(() => {
+      const cyNow = cyRef.current;
+      if (!cyNow) return;
+      cyNow.resize();
+      if (firstObserve) {
+        // Skip the initial fire so we don't fight the opening layout run.
+        firstObserve = false;
+        return;
+      }
+      // Debounced re-fit keeps the graph fully visible after a large size jump
+      // (folded <-> unfolded) without disrupting normal pan/zoom.
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        const c = cyRef.current;
+        if (c && !c.elements().empty()) c.fit(undefined, 60);
+      }, 200);
+    });
+    if (containerRef.current) ro.observe(containerRef.current);
+
     // Run layout explicitly after initialization for better results
      
     cy.layout({
@@ -346,6 +376,8 @@ export function OntologyGraph() {
 
     return () => {
       mountedRef.current = false;
+      ro.disconnect();
+      if (resizeTimer) window.clearTimeout(resizeTimer);
       if (window.__ONTOLOGY_PREVIEW_CY__ === cy) {
         delete window.__ONTOLOGY_PREVIEW_CY__;
       }
@@ -571,9 +603,11 @@ export function OntologyGraph() {
         <button className="graph-control-btn" onClick={handleReset} title="Reset Layout">
           <RotateCcw size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleDownload} title="Download Graph as PNG" data-testid="download-ontology-png">
-          <Download size={18} />
-        </button>
+        {!IS_HARMONY && (
+          <button className="graph-control-btn" onClick={handleDownload} title="Download Graph as PNG" data-testid="download-ontology-png">
+            <Download size={18} />
+          </button>
+        )}
       </div>
 
       <div className="graph-legend">

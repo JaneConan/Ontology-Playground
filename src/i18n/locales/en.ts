@@ -24,6 +24,7 @@ export default {
 
   // Header
   'header.untitled': 'Untitled Ontology',
+  'header.appName': 'Ontology Playground',
   'header.preview': '(Preview)',
   'header.points': 'points',
   'header.badges': 'badges',

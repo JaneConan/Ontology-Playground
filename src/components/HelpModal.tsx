@@ -24,7 +24,7 @@ export function HelpModal({ onClose }: HelpModalProps) {
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: 700 }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, position: 'sticky', top: 0, background: 'var(--bg-secondary)', zIndex: 2, paddingBottom: 8 }}>
           <h2 style={{ fontSize: 24, fontWeight: 600 }}>{t('help.title')}</h2>
           <button className="icon-btn" onClick={onClose}>
             <X size={20} />

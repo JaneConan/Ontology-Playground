@@ -298,11 +298,21 @@ body {
 /* App Layout */
 .app-container {
   display: grid;
-  grid-template-columns: 280px 1fr 360px;
+  /* Use minmax(0, …) so the fixed side panels can shrink instead of forcing a
+     horizontal overflow when the viewport narrows (e.g. folding a foldable).
+     Without this the 1fr graph column can collapse to a negative/zero width
+     and content gets pushed off-screen. */
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr) minmax(0, 360px);
   grid-template-rows: 64px 1fr;
-  height: 100vh;
-  height: 100dvh;
-  gap: 0;
+  /* Drive height from the 100% chain (html/body/#root) instead of 100dvh.
+     dvh is computed once and can go STALE when a foldable folds/unfolds,
+     leaving the container taller than the new viewport so the bottom of the
+     panels (检视器/查询) and the mobile tabs get clipped and unreachable.
+     100% re-resolves against the Web viewport on every layout, so it always
+     tracks the real window size. */
+  width: 100%;
+  min-width: 0;
+  height: 100%;
 }
 
 /* Header */
@@ -520,6 +530,7 @@ body {
 
 /* Left Panel - Quest Panel */
 .quest-panel {
+  min-width: 0;
   background: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
   display: flex;
@@ -741,6 +752,7 @@ body {
 
 /* Center - Graph Canvas */
 .graph-container {
+  min-width: 0;
   position: relative;
   overflow: hidden;
   /* Fallback background for older browsers */
@@ -861,6 +873,7 @@ body {
 
 /* Right Sidebar Container */
 .right-sidebar {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -1316,6 +1329,8 @@ body {
   padding: 40px;
   max-width: 600px;
   width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-lg);
   color: var(--text-primary);
@@ -1434,7 +1449,7 @@ body {
 /* Responsive */
 @media (max-width: 1200px) {
   .app-container {
-    grid-template-columns: 260px 1fr 320px;
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr) minmax(0, 320px);
   }
   .app-container .app-footer {
     left: 260px;
@@ -1451,8 +1466,7 @@ body {
   .app-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
+    height: 100%;
   }
 
   .header {
@@ -1489,8 +1503,16 @@ body {
     overflow: hidden;
   }
 
-  /* Mobile bottom tabs */
+  /* Mobile bottom tabs — pin to viewport bottom with a z-index above the
+     drawer (z-index 500) so quests/inspector/query panels never occlude it,
+     even on foldables where the flex/100% chain can leave the tabs slightly
+     above the viewport bottom. */
   .mobile-panel-tabs {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     display: flex;
     flex-shrink: 0;
     padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
@@ -1500,8 +1522,10 @@ body {
     display: none;
   }
 
+  /* The mobile Tab Bar is fixed at bottom:0 (~48px+safe-area), so the graph
+     controls must sit above it to remain reachable. */
   .graph-controls {
-    bottom: 12px;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px));
     left: 12px;
   }
 }
@@ -1530,8 +1554,8 @@ body {
     width: 100%;
     max-width: 100%;
     max-height: 100%;
+    overflow-y: auto;
     border-radius: 0;
-    height: 100%;
   }
 
   .modal-overlay {
@@ -2037,8 +2061,7 @@ body {
 .designer-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
   background: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -3343,8 +3366,8 @@ body {
   position: fixed !important;
   inset: 0 !important;
   z-index: 1500;
-  width: 100vw !important;
-  height: 100vh !important;
+  width: 100% !important;
+  height: 100% !important;
   margin: 0 !important;
   border-radius: 0 !important;
   border: none !important;

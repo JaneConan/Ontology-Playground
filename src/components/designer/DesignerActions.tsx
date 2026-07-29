@@ -8,6 +8,8 @@ import { serializeToRDF } from '../../lib/rdf/serializer';
 import { navigate } from '../../lib/router';
 import { SubmitCatalogueModal } from './SubmitCatalogueModal';
 
+const IS_HARMONY = import.meta.env.VITE_HARMONY === 'true';
+
 /**
  * Toolbar buttons — rendered in the designer topbar.
  */
@@ -75,15 +77,19 @@ export function DesignerToolbar() {
           <CheckCircle size={14} /> {t('designer.validate')}
         </button>
         <div className="designer-toolbar-sep" />
-        <button className="designer-toolbar-btn" onClick={handleExportRDF} title={t('designer.exportRdfTitle')}>
-          <Download size={14} /> {t('designer.exportRdf')}
-        </button>
+        {!IS_HARMONY && (
+          <button className="designer-toolbar-btn" onClick={handleExportRDF} title={t('designer.exportRdfTitle')}>
+            <Download size={14} /> {t('designer.exportRdf')}
+          </button>
+        )}
         <button className="designer-toolbar-btn" onClick={handleLoadInPlayground} title={t('designer.loadInPlaygroundTitle')}>
           <Upload size={14} /> {t('designer.loadInPlayground')}
         </button>
-        <button className="designer-toolbar-btn submit" onClick={handleSubmitToCatalogue} title={t('designer.submitTitle')}>
-          <Github size={14} /> {t('designer.submitToCatalogue')}
-        </button>
+        {!IS_HARMONY && (
+          <button className="designer-toolbar-btn submit" onClick={handleSubmitToCatalogue} title={t('designer.submitTitle')}>
+            <Github size={14} /> {t('designer.submitToCatalogue')}
+          </button>
+        )}
       </div>
 
       {showSubmitModal && (
