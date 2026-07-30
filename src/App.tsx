@@ -207,6 +207,7 @@ function App() {
         onDesignerClick={openDesigner}
         onNLBuilderClick={AI_BUILDER_ENABLED ? () => setShowNLBuilder(true) : undefined}
         onSummaryClick={() => setShowSummary(true)}
+        mobilePanel={mobilePanel}
       />
       <QuestPanel />
       <OntologyGraph />

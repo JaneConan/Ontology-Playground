@@ -22,12 +22,21 @@ interface HeaderProps {
   onDesignerClick: () => void;
   onNLBuilderClick?: () => void;
   onSummaryClick: () => void;
+  mobilePanel: 'graph' | 'quests' | 'inspector' | 'query';
 }
 
-export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImportExportClick, onGalleryClick, onDesignerClick, onNLBuilderClick, onSummaryClick }: HeaderProps) {
+export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImportExportClick, onGalleryClick, onDesignerClick, onNLBuilderClick, onSummaryClick, mobilePanel }: HeaderProps) {
   const { t } = useTranslation();
   const { theme, setTheme, totalPoints, earnedBadges, currentOntology, dataBindings } = useAppStore();
   const route = useRoute();
+  // Hamburger menu is only meaningful on the graph view. On other pages
+  // (catalogue modal, quests/inspector/query panels) it has no valid target,
+  // so we hide it there to avoid a dead control.
+  // catalogue route is graph-backed too; the modal only shows when there is NO ontologyId.
+  // After loading an ontology from the catalogue the route stays 'catalogue' + ontologyId and the
+  // modal closes — that must still count as the graph view so the hamburger reappears.
+  const showGallery = route.page === 'catalogue' && !route.ontologyId;
+  const isGraphView = mobilePanel === 'graph' && !showGallery && (route.page === 'home' || route.page === 'embed' || route.page === 'share' || route.page === 'catalogue');
   const [shareStatus, setShareStatus] = useState<'idle' | 'copying' | 'copied' | 'downloaded'>('idle');
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -107,6 +116,9 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [themeMenuOpen]);
+
+  // Hide + reset the hamburger whenever we leave the graph view (mobile)
+  useEffect(() => { if (!isGraphView) setMenuOpen(false); }, [isGraphView]);
 
   const menuAction = (fn: () => void) => () => { setMenuOpen(false); fn(); };
 
@@ -218,10 +230,12 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
 
         {/* Mobile hamburger menu */}
         <div className="header-mobile-menu" ref={menuRef}>
+        {isGraphView && (
         <button className="icon-btn header-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label={t('header.menu')} aria-expanded={menuOpen}>
           <Menu size={22} />
         </button>
-        {menuOpen && (
+        )}
+        {isGraphView && menuOpen && (
           <div className="mobile-menu-dropdown">
             <div className="mobile-menu-stats">
               <Trophy size={16} />
@@ -232,9 +246,11 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
               <span className="stat-value">{earnedBadges.length}</span>
               <span>{t('header.badges')}</span>
             </div>
-            <button className="mobile-menu-item" onClick={menuAction(handleShare)}>
-              <Share2 size={18} /> {shareLabel}
-            </button>
+            {!IS_HARMONY && (
+              <button className="mobile-menu-item" onClick={menuAction(handleShare)}>
+                <Share2 size={18} /> {shareLabel}
+              </button>
+            )}
             <button className="mobile-menu-item" onClick={menuAction(onSummaryClick)}>
               <FileText size={18} /> {t('header.summary')}
             </button>
