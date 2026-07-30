@@ -29,6 +29,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       difficulty: "beginner",
       category: "exploration",
       steps: explorationSteps,
+      source: 'generated',
       reward: {
         badge: "Entity Explorer",
         badgeIcon: "🎖️",
@@ -75,7 +76,8 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
         difficulty: "intermediate",
         category: "traversal",
         steps: relSteps,
-        reward: {
+        source: 'generated',
+      reward: {
           badge: "Connection Master",
           badgeIcon: "🔗",
           points: 200
@@ -129,6 +131,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       difficulty: "intermediate",
       category: "exploration",
       steps: hubSteps,
+      source: 'generated',
       reward: {
         badge: "Hub Detective",
         badgeIcon: "🔍",
@@ -173,6 +176,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       difficulty: "intermediate",
       category: "exploration",
       steps: propSteps,
+      source: 'generated',
       reward: {
         badge: "Data Scholar",
         badgeIcon: "📊",
@@ -222,6 +226,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
     difficulty: "advanced",
     category: "query",
     steps: querySteps,
+    source: 'generated',
     reward: {
       badge: "Query Wizard",
       badgeIcon: "🧙",
@@ -300,7 +305,8 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
         difficulty: "advanced",
         category: "traversal",
         steps: chainSteps,
-        reward: {
+        source: 'generated',
+      reward: {
           badge: "Path Pioneer",
           badgeIcon: "🗺️",
           points: 350

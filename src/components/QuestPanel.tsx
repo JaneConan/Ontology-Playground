@@ -2,9 +2,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store/appStore';
 import { Trophy, Star, X, CheckCircle, Lightbulb, Target } from 'lucide-react';
+import { localizeQuest, localizeDifficulty } from '../data/questTranslations';
 
 export function QuestPanel() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
     availableQuests,
     activeQuest,
@@ -13,7 +14,8 @@ export function QuestPanel() {
     earnedBadges,
     totalPoints,
     startQuest,
-    abandonQuest
+    abandonQuest,
+    currentOntology
   } = useAppStore();
 
   return (
@@ -27,7 +29,9 @@ export function QuestPanel() {
 
       {/* Active Quest Display */}
       <AnimatePresence>
-        {activeQuest && (
+        {activeQuest && (() => {
+          const lq = localizeQuest(activeQuest, i18n.language, currentOntology);
+          return (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -36,20 +40,20 @@ export function QuestPanel() {
           >
             <div className="active-quest-title">
               <Target size={18} />
-              {activeQuest.title}
+              {lq.title}
             </div>
-            
+
             <div className="quest-progress">
               <div className="progress-bar">
                 <motion.div
                   className="progress-fill"
                   initial={{ width: 0 }}
-                  animate={{ width: `${((currentStepIndex + 1) / activeQuest.steps.length) * 100}%` }}
+                  animate={{ width: `${((currentStepIndex + 1) / lq.steps.length) * 100}%` }}
                   transition={{ duration: 0.3 }}
                 />
               </div>
               <span className="progress-text">
-                {currentStepIndex + 1} / {activeQuest.steps.length}
+                {currentStepIndex + 1} / {lq.steps.length}
               </span>
             </div>
 
@@ -60,12 +64,12 @@ export function QuestPanel() {
               className="current-step"
             >
               <div className="step-instruction">
-                {activeQuest.steps[currentStepIndex].instruction}
+                {lq.steps[currentStepIndex].instruction}
               </div>
-              {activeQuest.steps[currentStepIndex].hint && (
+              {lq.steps[currentStepIndex].hint && (
                 <div className="step-hint">
                   <Lightbulb size={12} style={{ marginRight: 4 }} />
-                  {activeQuest.steps[currentStepIndex].hint}
+                  {lq.steps[currentStepIndex].hint}
                 </div>
               )}
             </motion.div>
@@ -77,7 +81,7 @@ export function QuestPanel() {
               </button>
             </div>
           </motion.div>
-        )}
+        ); })()}
       </AnimatePresence>
 
       {/* Quest List */}
@@ -85,6 +89,7 @@ export function QuestPanel() {
         {availableQuests.map(quest => {
           const isCompleted = completedQuests.includes(quest.id);
           const isActive = activeQuest?.id === quest.id;
+          const lq = localizeQuest(quest, i18n.language, currentOntology);
 
           return (
             <motion.div
@@ -97,16 +102,16 @@ export function QuestPanel() {
               <div className="quest-header">
                 <span className="quest-title">
                   {isCompleted && <CheckCircle size={16} style={{ marginRight: 6, color: 'var(--ms-green)' }} />}
-                  {quest.title}
+                  {lq.title}
                 </span>
                 <span className={`quest-badge ${quest.difficulty}`}>
-                  {quest.difficulty}
+                  {localizeDifficulty(quest.difficulty, i18n.language)}
                 </span>
               </div>
-              <p className="quest-description">{quest.description}</p>
+              <p className="quest-description">{lq.description}</p>
               <div className="quest-reward">
                 <Trophy size={14} />
-                <span>{quest.reward.badgeIcon} {quest.reward.badge}</span>
+                <span>{quest.reward.badgeIcon} {lq.reward.badge}</span>
                 <span className="quest-points">+{quest.reward.points} {t('quest.pts')}</span>
               </div>
             </motion.div>

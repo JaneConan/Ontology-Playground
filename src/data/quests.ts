@@ -12,6 +12,8 @@ export interface Quest {
     badgeIcon: string;
     points: number;
   };
+  /** 'generated' = produced by generateQuestsForOntology (localized at render); 'static' = hand-authored (quests.ts). */
+  source?: 'static' | 'generated';
 }
 
 export interface QuestStep {
