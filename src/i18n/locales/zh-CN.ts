@@ -13,7 +13,7 @@ export default {
 
   // 数据来源弹窗
   'dataSources.title': '数据来源',
-  'dataSources.subtitle': 'Fourth Coffee 本体如何绑定到数据湖屋',
+  'dataSources.subtitle': '{{name}} 本体如何绑定到数据湖屋',
   'dataSources.lakehouse': '数据湖屋',
   'dataSources.lakehouseDesc': '面向分析的统一存储层。本体将实体类型绑定到湖屋表与语义模型。',
   'dataSources.propertiesMapped': '已映射 {{count}} 个属性',
@@ -23,7 +23,7 @@ export default {
   'dataSources.property': '属性',
   'dataSources.column': '列',
   'dataSources.otherEntities': '其他实体类型：',
-  'dataSources.otherEntitiesNote': '在本演示中，仅展示 Customer、Order 与 Product 的绑定。在实际部署中，所有实体都会绑定到数据平台来源。',
+  'dataSources.otherEntitiesNote': '在本演示中，数据绑定仅作为示意展示部分实体。在实际部署中，所有实体都会绑定到数据平台来源。',
 
   // 本体摘要弹窗
   'summary.title': '本体摘要',
@@ -108,7 +108,7 @@ export default {
 
   // 欢迎弹窗
   'welcome.title': '欢迎使用本体演练场（预览版）',
-  'welcome.subtitle': '通过 Fourth Coffee 的视角探索 Microsoft Fabric IQ 本体',
+  'welcome.subtitle': '通过实例亲手探索 Microsoft Fabric IQ 本体',
   'welcome.featureEntityTypes': '实体类型',
   'welcome.featureEntityTypesText': '发现可复用的逻辑模型，如客户、产品与订单',
   'welcome.featureRelationships': '关系',
@@ -131,7 +131,7 @@ export default {
   'help.viewDataBindings': '查看数据绑定',
   'help.viewDataBindingsText': '选中实体类型后，检视器会显示本体属性如何映射到数据湖屋中的真实数据源，包括湖屋表与语义模型。',
   'help.aboutFabricIQ': '关于 Microsoft Fabric IQ 本体',
-  'help.aboutFabricIQText': '本体是关于你的业务的、机器可理解的共享词汇表。它定义了实体类型（如客户、产品）、它们的属性与关系。本演示使用虚构的“Fourth Coffee”来说明这些概念。',
+  'help.aboutFabricIQText': '本体是关于你的业务的、机器可理解的共享词汇表。它定义了实体类型、它们的属性与关系。本演示以一个虚构的示例企业来说明这些概念。',
   'help.keyboardShortcuts': '键盘快捷键',
   'help.kbdOpenPalette': '打开命令面板',
   'help.kbdOpenHelp': '打开本帮助对话框',

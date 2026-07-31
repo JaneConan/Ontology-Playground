@@ -14,7 +14,7 @@ export default {
 
   // Data Sources modal
   'dataSources.title': 'Data Sources',
-  'dataSources.subtitle': 'How the Fourth Coffee ontology binds to a Data Lakehouse',
+  'dataSources.subtitle': 'How the {{name}} ontology binds to a Data Lakehouse',
   'dataSources.lakehouse': 'Data Lakehouse',
   'dataSources.lakehouseDesc': 'Unified storage layer for analytics. The ontology binds entity types to lakehouse tables and semantic models.',
   'dataSources.propertiesMapped': '{{count}} properties mapped',
@@ -24,7 +24,7 @@ export default {
   'dataSources.property': 'Property',
   'dataSources.column': 'Column',
   'dataSources.otherEntities': 'Other Entity Types:',
-  'dataSources.otherEntitiesNote': 'In this demo, bindings are shown for Customer, Order, and Product. In a real deployment, all entities would be bound to data platform sources.',
+  'dataSources.otherEntitiesNote': 'In this demo, only sample entity bindings are shown. In a real deployment, all entities would be bound to data platform sources.',
 
   // Ontology Summary modal
   'summary.title': 'Ontology Summary',
@@ -109,7 +109,7 @@ export default {
 
   // Welcome modal
   'welcome.title': 'Welcome to Ontology Playground (Preview)',
-  'welcome.subtitle': 'Explore Microsoft Fabric IQ Ontology through the lens of Fourth Coffee',
+  'welcome.subtitle': 'Explore the Microsoft Fabric IQ Ontology through hands-on examples',
   'welcome.featureEntityTypes': 'Entity Types',
   'welcome.featureEntityTypesText': 'Discover reusable logical models like Customer, Product, and Order',
   'welcome.featureRelationships': 'Relationships',
@@ -132,7 +132,7 @@ export default {
   'help.viewDataBindings': 'View Data Bindings',
   'help.viewDataBindingsText': 'When you select an entity type, the inspector shows how ontology properties map to real data sources in a data lakehouse, including lakehouse tables and semantic models.',
   'help.aboutFabricIQ': 'About Microsoft Fabric IQ Ontology',
-  'help.aboutFabricIQText': 'An ontology is a shared, machine-understandable vocabulary of your business. It defines entity types (like Customer, Product), their properties, and relationships. This demo uses a fictional "Fourth Coffee" to illustrate these concepts.',
+  'help.aboutFabricIQText': 'An ontology is a shared, machine-understandable vocabulary of your business. It defines entity types, their properties, and relationships. This demo uses a fictional example company to illustrate these concepts.',
   'help.keyboardShortcuts': 'Keyboard Shortcuts',
   'help.kbdOpenPalette': 'Open command palette',
   'help.kbdOpenHelp': 'Open this help dialog',

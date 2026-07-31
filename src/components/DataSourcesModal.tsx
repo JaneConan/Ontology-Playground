@@ -10,6 +10,8 @@ interface DataSourcesModalProps {
 export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
   const { t } = useTranslation();
   const { currentOntology, dataBindings } = useAppStore();
+  const boundIds = new Set(dataBindings.map(b => b.entityTypeId));
+  const unboundEntities = currentOntology.entityTypes.filter(e => !boundIds.has(e.id));
   
   return (
     <motion.div
@@ -31,7 +33,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
           <div>
             <h2 style={{ fontSize: 24, fontWeight: 600 }}>{t('dataSources.title')}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
-              {t('dataSources.subtitle')}
+              {t('dataSources.subtitle', { name: currentOntology.name })}
             </p>
           </div>
           <button className="icon-btn" onClick={onClose}>
@@ -164,7 +166,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
             textAlign: 'center'
           }}>
             <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 4 }}>
-              <strong>{t('dataSources.otherEntities')}</strong> Store, Supplier, Shipment
+              <strong>{t('dataSources.otherEntities')}</strong> {unboundEntities.map(e => e.name).join(', ')}
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
               {t('dataSources.otherEntitiesNote')}
